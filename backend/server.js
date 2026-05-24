@@ -66,13 +66,28 @@ app.get('/api/events', async (req, res) => {
     }
 });
 
-// Ensure the function starts with 'async' right here
 app.post('/api/generate-itinerary', async (req, res) => {
     try {
         const { name, email, topic, experience } = req.body;
 
-        // ... your Gemini API prompt generation code is here ...
-        // const itineraryText = ... (whatever your variable name is)
+        // --- 1. LIVE GEMINI AI ENGINE GENERATION ---
+        // We pass your parameters directly to the model to compile the text
+        const response = await genAI.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: `Generate a brief, highly personalized tech event itinerary for ${name} attending the track "${topic}". They have an experience level of ${experience}. Provide 3 crisp, bulleted agenda milestones.`,
+        });
+
+        // This creates the variable that your email and response blocks are looking for!
+        const itineraryText = response.text; 
+
+        // --- 2. RECORD ATTEENDEE METRICS IN MONGODB ---
+        const newParticipant = new Participant({
+            name,
+            email,
+            topic,
+            itinerary_text: itineraryText
+        });
+        await newParticipant.save();
 
         // --- 3. PRODUCTION DUAL-DISPATCH (REAL GMAIL ROUTING ENGINE) ---
         const transporter = nodemailer.createTransport({
@@ -108,7 +123,6 @@ app.post('/api/generate-itinerary', async (req, res) => {
             `
         };
 
-        // This await is only valid because the arrow function above has the 'async' identifier!
         const info = await transporter.sendMail(mailOptions);
         console.log(`📨 Live Production Ticket Emails Dispatched to: ${recipientsList}`);
 
