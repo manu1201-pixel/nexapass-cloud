@@ -1,0 +1,4 @@
+Project: NexaPass v2
+Stack: Node.js, Express, MySQL (Aiven), Tailwind.
+Auth: JWT (key: nexa_token).
+Style: Modular, clean code, error handling on every route.

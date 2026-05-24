@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexaPass | Unified Event Gateway</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #060913;         /* Cinematic ultra-black */
+            --bg-card: #0B101D;         /* Deep obsidian panels */
+            --border: #172237;          /* High-end charcoal framing borders */
+            --text-primary: #F8FAFC;    /* Radiant crisp white text */
+            --text-secondary: #64748B;  /* Muted industrial supporting silver */
+            --mint: #4ADE80;            /* Your flagship glowing mint accent */
+            --mint-glow: rgba(74, 222, 128, 0.12);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient background glow effects */
+        .glow-orb {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(74, 222, 128, 0.04) 0%, rgba(0,0,0,0) 70%);
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Top Navigation Bar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            color: var(--mint);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .nav-links span {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-links span:hover {
+            color: var(--text-primary);
+        }
+
+        /* Cinematic Hero Wrapper Container */
+        .hero-container {
+            max-width: 800px;
+            margin: 120px auto 0 auto;
+            text-align: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--mint);
+            background-color: var(--mint-glow);
+            border: 1px solid rgba(74, 222, 128, 0.2);
+            padding: 6px 14px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 28px;
+        }
+
+        .badge i {
+            font-size: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin: 0 0 24px 0;
+            line-height: 1.1;
+            color: #ffffff;
+        }
+
+        h1 span {
+            background: linear-gradient(135deg, #ffffff 30%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0 auto 40px auto;
+            max-width: 580px;
+        }
+
+        /* Primary Call-to-Action Premium Button */
+        .cta-btn {
+            background: linear-gradient(135deg, #4ADE80 0%, #22C55E 100%);
+            color: #042F1A;
+            border: none;
+            padding: 16px 36px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 30px rgba(74, 222, 128, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(74, 222, 128, 0.35);
+            opacity: 0.95;
+        }
+
+        /* Architectural Feature Highlight Panels */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 1000px;
+            margin: 100px auto 60px auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .feature-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 32px;
+            border-radius: 16px;
+            text-align: left;
+            transition: border-color 0.2s;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+
+        .icon-box {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(74, 222, 128, 0.05);
+            border: 1px solid rgba(74, 222, 128, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--mint);
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: #ffffff;
+        }
+
+        .feature-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-orb"></div>
+
+    <nav>
+        <div class="logo">
+            <i class="fa-solid fa-cube"></i> NEXAPASS
+        </div>
+        <div class="nav-links">
+            <span>Core Engines</span>
+            <span>Unstop Sync</span>
+            <span>Security Matrix</span>
+        </div>
+    </nav>
+
+    <div class="hero-container">
+        <div class="badge">
+            <i class="fa-solid fa-circle"></i> V2.0 Live Production Ecosystem
+        </div>
+        <h1>
+            <span>Next-Generation Universal Tech Event Pass Gateway</span>
+        </h1>
+        <p class="subtitle">
+            Instantly discover elite local hackathons, sync live opportunities directly from Unstop, and generate custom AI verified credentials routed straight to your inbox.
+        </p>
+        <a href="dashboard.html" class="cta-btn">
+            Enter Dashboard Terminal <i class="fa-solid fa-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="icon-box"><i class="fa-solid fa-location-crosshairs"></i></div>
+            <h3>Geospatial Local Indices</h3>
+            <p>Utilizes native MongoDB Atlas 2dsphere indexing structures to map computing tracks near your coordinates.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box"><i class="fa-solid fa-arrows-rotate"></i></div>
+            <h3>Unstop Sync Channels</h3>
+            <p>Execute real-time direct server-to-server HTTP fetches to sync national hackathons natively without middleware.</p>
+        </div>
+        <div class="feature-card">
+            <div class="icon-box"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+            <h3>Gemini AI Credentials</h3>
+            <p>Procedural itinerary flow compilation maps personalized security agendas instantly sent to verified user mailboxes.</p>
+        </div>
+    </div>
+
+</body>
+</html>
