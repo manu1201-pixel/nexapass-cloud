@@ -66,45 +66,59 @@ app.get('/api/events', async (req, res) => {
     }
 });
 
-// --- 3. PRODUCTION DUAL-DISPATCH (REAL GMAIL ROUTING ENGINE) ---
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASS
+// Ensure the function starts with 'async' right here
+app.post('/api/generate-itinerary', async (req, res) => {
+    try {
+        const { name, email, topic, experience } = req.body;
+
+        // ... your Gemini API prompt generation code is here ...
+        // const itineraryText = ... (whatever your variable name is)
+
+        // --- 3. PRODUCTION DUAL-DISPATCH (REAL GMAIL ROUTING ENGINE) ---
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.GMAIL_USER,
+                pass: process.env.GMAIL_APP_PASS
+            }
+        });
+
+        const recipientsList = `registrar@nexapass.co, ${email}`;
+
+        const mailOptions = {
+            from: `"NexaPass Gatekeeper" <${process.env.GMAIL_USER}>`,
+            to: recipientsList, 
+            subject: `🎫 Your VIP Access Pass Granted: ${topic}`,
+            html: `
+                <div style="background-color:#0B0F17; color:#F8FAFC; padding:30px; font-family:sans-serif; border-radius:12px; border:1px solid #1E293B; max-width:500px; margin: 0 auto;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <span style="font-size: 11px; font-weight: 700; color: #4ADE80; background-color: rgba(74, 222, 128, 0.1); padding: 4px 10px; border-radius: 6px; text-transform: uppercase; border: 1px solid rgba(74, 222, 128, 0.2);">VIP ACCESS GRANTED</span>
+                    </div>
+                    <h2 style="color:#ffffff; margin-top:0; text-align: center; font-size: 22px; letter-spacing: -0.5px;">${topic}</h2>
+                    <hr style="border-color:#1E293B; margin: 20px 0;">
+                    <p style="font-size: 14px; color: #94A3B8;"><strong>Verified Attendee:</strong> <span style="color: #ffffff;">${name}</span></p>
+                    <p style="font-size: 14px; color: #94A3B8;"><strong>Clearance ID:</strong> <span style="color: #ffffff; font-family: monospace;">NP-2026-88X7</span></p>
+                    
+                    <div style="background-color:#121824; padding:20px; border-radius:12px; border:1px solid #1E293B; margin-top:20px;">
+                        <h4 style="margin:0 0 12px 0; color:#4ADE80; font-size: 13px;">✨ AI Synced Agenda Flow:</h4>
+                        <p style="margin:0; font-size:14px; color:#F8FAFC; white-space:pre-line; line-height: 1.6;">${itineraryText}</p>
+                    </div>
+                    <p style="font-size:11px; color:#94A3B8; margin-top:30px; text-align: center; font-family: monospace;">SECURE_TOKEN//2026 // Real-Time Inbox Sync Operational</p>
+                </div>
+            `
+        };
+
+        // This await is only valid because the arrow function above has the 'async' identifier!
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`📨 Live Production Ticket Emails Dispatched to: ${recipientsList}`);
+
+        res.json({ success: true, itinerary: itineraryText, previewUrl: "https://mail.google.com" });
+
+    } catch (error) {
+        console.error("System Matrix Fault:", error);
+        res.status(500).json({ error: "Failed to compile token parameters." });
     }
 });
-
-const recipientsList = `registrar@nexapass.co, ${email}`;
-
-const mailOptions = {
-    from: `"NexaPass Gatekeeper" <${process.env.GMAIL_USER}>`,
-    to: recipientsList, 
-    subject: `🎫 Your VIP Access Pass Granted: ${topic}`,
-    html: `
-        <div style="background-color:#0B0F17; color:#F8FAFC; padding:30px; font-family:sans-serif; border-radius:12px; border:1px solid #1E293B; max-width:500px; margin: 0 auto;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <span style="font-size: 11px; font-weight: 700; color: #4ADE80; background-color: rgba(74, 222, 128, 0.1); padding: 4px 10px; border-radius: 6px; text-transform: uppercase; border: 1px solid rgba(74, 222, 128, 0.2);">VIP ACCESS GRANTED</span>
-            </div>
-            <h2 style="color:#ffffff; margin-top:0; text-align: center; font-size: 22px; letter-spacing: -0.5px;">${topic}</h2>
-            <hr style="border-color:#1E293B; margin: 20px 0;">
-            <p style="font-size: 14px; color: #94A3B8;"><strong>Verified Attendee:</strong> <span style="color: #ffffff;">${name}</span></p>
-            <p style="font-size: 14px; color: #94A3B8;"><strong>Clearance ID:</strong> <span style="color: #ffffff; font-family: monospace;">NP-2026-88X7</span></p>
-            
-            <div style="background-color:#121824; padding:20px; border-radius:12px; border:1px solid #1E293B; margin-top:20px;">
-                <h4 style="margin:0 0 12px 0; color:#4ADE80; font-size: 13px;">✨ AI Synced Agenda Flow:</h4>
-                <p style="margin:0; font-size:14px; color:#F8FAFC; white-space:pre-line; line-height: 1.6;">${itineraryText}</p>
-            </div>
-            <p style="font-size:11px; color:#94A3B8; margin-top:30px; text-align: center; font-family: monospace;">SECURE_TOKEN//2026 // Real-Time Inbox Sync Operational</p>
-        </div>
-    `
-};
-
-const info = await transporter.sendMail(mailOptions);
-console.log(`📨 Live Production Ticket Emails Dispatched to: ${recipientsList}`);
-
-// Since we are now sending a real email, we can pass back a direct link to your Gmail inbox for convenience
-res.json({ success: true, itinerary: itineraryText, previewUrl: "https://mail.google.com" });
 
 // --- 4. NATIVE DIRECT EXTERNAL DATA PIPELINE SYNC (REAL UNSTOP DATA) ---
 app.post('/api/sync-external-events', async (req, res) => {
