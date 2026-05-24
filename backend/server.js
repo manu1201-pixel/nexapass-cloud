@@ -66,21 +66,46 @@ app.get('/api/events', async (req, res) => {
     }
 });
 
+
 app.post('/api/generate-itinerary', async (req, res) => {
+    // 1. Establish a default backup itinerary immediately 
+    let itineraryText = `✨ NEXAPASS PLATINUM AGENDA FLOW:
+    • 09:00 AM — Keynote Core Synchronicity Matrix Init
+    • 11:30 AM — Applied Cloud Architecture & Security Breakout
+    • 03:00 PM — Interactive AI Synergy Prototype Deployment Lab`;
+
     try {
         const { name, email, topic, experience } = req.body;
 
-        // --- 1. LIVE GEMINI AI ENGINE GENERATION ---
-        // We pass your parameters directly to the model to compile the text
-        const response = await genAI.models.generateContent({
+        // --- 2. LIVE GEMINI AI ENGINE GENERATION WITH TIMEOUT ---
+        console.log("🤖 Querying Gemini Core Matrix...");
+        
+        // We wrap the API call in a promise racing trick to prevent infinite freezing
+        const aiCall = genAI.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: `Generate a brief, highly personalized tech event itinerary for ${name} attending the track "${topic}". They have an experience level of ${experience}. Provide 3 crisp, bulleted agenda milestones.`,
         });
 
-        // This creates the variable that your email and response blocks are looking for!
-        const itineraryText = response.text; 
+        // If Gemini doesn't answer within 6 seconds, drop out to the fallback gracefully
+        const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 6000));
+        
+        try {
+            const response = await Promise.race([aiCall, timeout]);
+            
+            // CORRECT COMPILATION SYNTAX FOR @google/genai SDK:
+            if (response && response.candidates && response.candidates[0]?.content?.parts[0]?.text) {
+                itineraryText = response.candidates[0].content.parts[0].text;
+                console.log("✅ Gemini Content Compiled Successfully!");
+            } else if (response && response.text) {
+                itineraryText = response.text;
+                console.log("✅ Gemini Fallback Text Property Parsed!");
+            }
+        } catch (aiError) {
+            console.log("⚠️ Gemini Engine Stalled or Blocked. Engaging Backup Itinerary Pipeline...");
+            // itineraryText keeps its default value defined at the top
+        }
 
-        // --- 2. RECORD ATTEENDEE METRICS IN MONGODB ---
+        // --- 3. RECORD ATTENDEE METRICS IN MONGODB ---
         const newParticipant = new Participant({
             name,
             email,
@@ -89,7 +114,7 @@ app.post('/api/generate-itinerary', async (req, res) => {
         });
         await newParticipant.save();
 
-        // --- 3. PRODUCTION DUAL-DISPATCH (REAL GMAIL ROUTING ENGINE) ---
+        // --- 4. PRODUCTION DUAL-DISPATCH (REAL GMAIL ROUTING ENGINE) ---
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
