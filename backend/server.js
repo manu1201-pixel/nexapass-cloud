@@ -171,7 +171,9 @@ app.post('/api/sync-external-events', async (req, res) => {
 });
 
 // --- 5. INITIALIZE SERVER GATEWAY TERMINAL ---
+// Dynamic port assignment: Uses Render's custom port allocation, defaults to 3000 locally
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Security Engine deployment operational on port ${PORT}`);
+
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Security Engine Operational & Synchronized on Port ${PORT}`);
 });
