@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             try {
                 console.log("📡 Initiating direct server-to-server data fetch...");
-                const response = await fetch('https://nexapass-cloud.onrender.com/api/sync-external-events', {
+                const response = await fetch('https://nexapass-cloud.onrender.com/api/events', {
                     method: 'POST'
                 });
                 const data = await response.json();

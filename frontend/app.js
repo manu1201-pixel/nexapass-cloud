@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 console.log("📨 Shipping transaction arrays to Node server backend...");
                 
-                const response = await fetch('https://nexapass-cloud.onrender.com/api/generate-itinerary', {
+                const response = await fetch('https://nexapass-cloud.onrender.com/api/events', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ name, email, topic: selectedEvent })
