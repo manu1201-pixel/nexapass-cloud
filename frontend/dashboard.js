@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // 3. CORE CORE RENDERER: Fetch layout arrays from MongoDB and display them
 async function loadNearbyEvents(lat, lng) {
     try {
-        const response = await fetch(`http://localhost:3000/api/events?lat=${lat}&lng=${lng}`);
+        const response = await fetch('https://nexapass-cloud.onrender.com/api/events?lat=' + lat + '&lng=' + lng);
         const data = await response.json();
 
         const container = document.getElementById('event-container');
